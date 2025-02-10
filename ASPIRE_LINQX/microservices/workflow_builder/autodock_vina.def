@@ -1,0 +1,25 @@
+Bootstrap: docker
+From: ubuntu:18.04
+
+%environment
+    export PDB_FILENAME="4XUF"
+    export SMILES="CC(=O)NC1=CC=C(C=C1)O"
+
+%apprun dock
+    exec echo "{'energy': -948.2}"
+
+%applabels dock
+    INPUT ligand: A SMILES string of the small molecule ligand, receptor: The receptor to dock the ligand to
+    INPUT_SCHEMA
+    OUTPUT energy: The calculated binding energy of the ligand to the receptor after docking
+    OUTPUT_SCHEMA
+
+%apphelp dock
+    Docks the provided PDBQT ligand file to the provided PDBQT receptor file
+
+%labels
+    TAGS Autodock, Vina, molecular docking
+    APPS dock
+
+%help
+    Microserive of AutoDock Vina, a software that docks small molecule ligands to receptors and returns predicted binding energy

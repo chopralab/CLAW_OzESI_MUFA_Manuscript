@@ -1,0 +1,36 @@
+Bootstrap: docker
+From: ubuntu:18.04
+
+%environment
+    export SMILES="CC(=O)NC1=CC=C(C=C1)O"
+
+%apprun aizynth_score
+    exec echo "{'aizynth_score': 2.3}"
+
+%applabels aizynth_score
+    INPUT smiles: The SMILES string of the molecule to score
+    INPUT_SCHEMA None
+    OUTPUT aizynth_score: The molecule's AI ZynthFinder synthesizability score
+    OUTPUT_SCHEMA None
+
+%apphelp aizynth_score
+   Returns the provided molecule's predicted synthesizability using AI ZynthFinder.
+
+%apprun sa_score
+    exec echo "{'sa_score': 2.8}"
+
+%applabels sa_score
+    INPUT smiles: The SMILES string of the molecule to score
+    INPUT_SCHEMA None
+    OUTPUT sa_score: The molecules synthetic accessability score
+    OUTPUT_SCHEMA None
+
+%apphelp sa_score
+    Returns the provided molecule's predicted synthesizability using the synthetic accessability score module.
+
+%labels
+    TAGS synthetic feasibility, synthetic accessibility, AI ZynthFinder, SA score
+    APPS aizynth_score, sa_score
+
+%help
+    Microservice for predicting a molecules synthetic feasability using AI ZynthFinder and synthetic accessability (SA) score

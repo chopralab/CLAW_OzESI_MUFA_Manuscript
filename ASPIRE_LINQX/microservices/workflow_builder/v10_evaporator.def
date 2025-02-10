@@ -1,0 +1,59 @@
+Bootstrap: docker
+From: ubuntu:18.04
+
+%apprun vial_load
+    exec echo "{'response': 'Vial loaded'}"
+
+%apphelp vial_load
+    Loads a vial onto the automated evaporator
+
+%applabels vial_load
+    INPUT None
+    OUTPUT response: Confirmation that the vial was loaded
+
+%apprun list_remote_methods
+    exec echo "{'response': ['veryHiBoil', 'hiBoil', 'aqueous', 'HPLC Fractions', 'volatile', 'hiVolatile', 'Mixed Volatile', 'Mixed Vol & HBP', 'Custom 1', 'Custom 2', 'Custom 3']}"
+
+%apphelp list_remote_methods
+    Lists all of the potential remote method files.
+
+%applabels list_remote_methods
+    INPUT None
+    OUTPUT response: A list of all method that can be run on the automated evaporator.
+
+%apprun remote_method_start
+    exec echo "{'response': 'Method remotely started'}"
+
+%apphelp remote_method_start
+    Starts the chosen remote method on the automated evaporator.
+
+%applabels remote_method_start
+    INPUT method_name: The name of the method to run
+    OUTPUT response: Confirmation that the method was remotely started
+
+%apprun unload_vial
+    exec echo "{'response': 'Vial unloaded'}"
+
+%apphelp unload_vial
+    Unloads the vial from the automated evaporator
+
+%applabels unload_vial
+    INPUT None
+    OUTPUT response: Confirmation that the vial was unloaded.
+
+%apprun vial_release
+    exec echo "{'response': 'Vial released'}"
+
+%apphelp vial_release
+    Releases the vial from the automated evaporator. The vial must be unloaded first.
+
+%applabels vial_release
+    INPUT None
+    OUTPUT response: Confirmation that the vial was released.
+
+%labels
+    TAGS evaporator, solvent evaporator, rotational evaporator, v10
+    APPS vial_load, list_remote_methods, remote_method_start, unload_vial, vial_release
+
+%help
+    Microservice for automated evaporation of organic solvent from a chemical sample. 

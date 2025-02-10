@@ -1,0 +1,34 @@
+Bootstrap: docker
+From: ubuntu:18.04
+
+%environment
+    export MOLECULE="{'mol': 'CC(=O)NC1=CC=C(C=C1)O'}"
+
+%apprun generate_mol
+    exec echo $MOLECULE
+
+%applabels generate_mol
+    INPUT vector: A 56 position vector of floats from -1 to 1
+    INPUT_SCHEMA None
+    OUTPUT smiles: The smiles string of the generated molecule
+    OUTPUT_SCHEMA None
+
+%apphelp generate_mol
+    Generates a molecule based on the provided vector. The model weights must be loaded prior to calling this app.
+
+%apprun load
+    exec echo "{'response': 'Weights successfully loaded', 'gpu': 0}"
+
+%applabels load
+    INPUT None
+    OUTPUT response: Confirmation that the weights were successfully loaded, gpu: The GPU the weights were loaded on.
+
+%apphelp load
+    Loads model weights onto GPU. The weights must be loaded onto the GPU prior to the first app call to generate molecules. 
+
+%labels
+    TAGS JTVAE, junction tree, varaitional auto encoder, molecular generation
+    APPS generate_mol, load
+
+%help
+    Container used to generate molecules based on an input 56-bit vector.

@@ -1,0 +1,64 @@
+Bootstrap: docker
+From: ubuntu:18.04
+
+%environment
+    export QQQ_CONNECT=TRUE
+    export METHOD_LIST="{'methods': ['default.m', 'FFA.m', 'TAG.m', 'Lyso_PE.m']}"
+    export WORKLIST="{'worklist': [['standard', 'default.m'], ['sample1', 'FFA.m'], ['sample2', 'FFA.m']]}"
+
+%apprun connect
+    exec echo "{'connected': True}"
+
+%apphelp connect
+    Connect to the QQQ MS. Must be run prior to running the worklist.
+
+%applabels connect
+    INPUT None
+    OUTPUT None
+
+%apprun list_methods
+    exec echo $METHOD_LIST
+
+%apphelp list_methods
+    List all of the method files available
+
+%applabels list_methods
+    INPUT None
+    OUTPUT methods: The list of methods that are available to run on the QQQ mass spec
+
+%apprun add_method
+    exec echo "Added [sample3, TAG.m] to worklist"
+
+%apphelp add_method
+    Adds sample and method pair to the current worklist where the method is run on the sample.
+
+%applabels add_method
+    INPUT sample: the position of the sample, method: the name of the method file
+    OUTPUT None
+
+%apprun list_worklist
+    exec echo $WORKLIST
+
+%apphelp list_worklist
+    List the current worklist assigend to the QQQ mass spec
+
+%applabels list_worklist
+    INPUT None
+    OUTPUT worklist: a list of sample-method pairings that are run on the QQQ mass spec
+
+%apprun run_worklist
+    exec echo "{'status_code': 101}"
+
+%apphelp run_worklist
+    Runs the current worklist on the QQQ MS
+
+%applabels run_worklist
+    INPUT None
+    OUTPUT status_code: The status code of the run
+
+%labels
+    TAGS Mass Spec, MS, Triple Quadrapole, QQQ
+    APPS connect, list_methods, add_method, list_worklist, run_worklist
+
+%help
+    Microservice for running a triple quadrapole mass spectrometer (QQQ MS)

@@ -1,0 +1,115 @@
+Bootstrap: docker
+From: ubuntu:18.04
+
+%environment
+    export SESSION_ID=001
+    export TEMPERATURE=80
+    export PRESSURE=1
+
+%apprun allocate_session
+    exec echo "{"session_id": $session_id}"
+
+%apphelp allocate_session
+    Allocates the Initiator+ session for a specific user. Must be called prior to running any other commands on the Initiator+ in the workflow. 
+    This will return the session ID which will be used to run all other Initiator+ commands.
+
+%applabels allocate_session
+    INPUT username: The username of the user, password: The password of the user.
+    OUTPUT session_id: The unique ID of the current session
+
+%apprun open_lid
+    exec echo "{'data': 'Initiator+ lid opened'}"
+
+%apphelp open_lid
+    Opens the lid of the Initiator+. Should be called immediately prior to loading any vials.
+
+%applabels open_lid
+    INPUT session_id: The ID of the current session.
+    OUTPUT data: Confirmation that the Initiator+ lid was opened
+
+%apprun load_vial
+    exec echo "{'data': 'Initiator+ vial loaded'}"
+
+%apphelp load_vial
+    Loads the vial into the Initiator+. The lid must be opened prior to loading the vial and closed after.
+
+%applabels load_vial
+    INPUT session_id: The ID of the current session
+    OUTPUT data: Confirmation that the vial was loaded into the Initiator+.
+
+%apprun close_lid
+    exec echo "{'data': 'Initiator+ lid closed'}"
+
+%apphelp close_lid
+    Closes the lid of the Initiator+. Should be called immediately after loading any vials.
+
+%applabels close_lid
+    INPUT session_id: The ID of the current session
+    OUTPUT data: Confirmation that the Initiator+ lid was closed.
+
+%apprun release_session
+    exec echo "{'data': 'Current Initiator+ session has ended'}"
+
+%apphelp release_session
+    Ends the current session. Should be called after all other Initiator+ operations.
+
+%applabels release_session
+    INPUT session_id: The ID of the current session.
+    OUTPUT data: Confirmation that the current session has ended.
+
+%apprun abort_activity
+    exec echo "{'data': 'Initiator+ activity for current session terminated'}"
+
+%apphelp abort_activity
+    Terminates the current activity on the Initiator+. Only use this if you are certian you need to stop an Initiator+ run early.
+
+%applabels abort_activity
+    INPUT session_id: The ID of the current session
+    OUTPUT data: Confirmation that Initiator+ activity for the current session was terminated
+
+%apprun shutdown_system
+    exec echo "{'data': 'Initiator+ shut down successfully'}"
+
+%apphelp shutdown_system
+    Shuts down the Initiator+. Only use this if you are told to shutdown the Initiator+ by the human.
+
+%applabels shutdown_system
+    INPUT session_id: The ID of the current session.
+    OUTPUT data: Confirmation that the Initiator+ has been shutdown.
+
+%apprun get_state
+    exec echo "{'data': 'Initiator+ is operational'}"
+
+%apphelp get_state
+    Gets the current state of the Initiator+ system
+
+%applabels get_state
+    INPUT session_id: The ID of the current session.
+    OUTPUT data: The state of the Initiator+ system.
+
+%apprun heat_vial
+    exec echo "{'data': 'Starting Initiator+ heating of vial'}"
+
+%apphelp heat_vial
+    Heats the vial to the defualt values or provided specifications. The lid must be closed prior to heating if it was previously opened.
+
+%applabels heat_vial
+    INPUT session_id: The ID of the current session, duration: The duration of heating, temperature: The temperature to heat the vial to, pressure: The pressure to heat the vial at.
+    OUTPUT data: Confirmation that the Initiator+ heating has started.
+
+%apprun update_heating_parameters
+    exec echo "{'data': 'Parameters successfully updated'}"
+
+%apphelp update_heating_parameters
+    Updates the default heating parameters to the provided specifications.
+
+%applabels update_heating_parameters
+    INPUT session_id: The ID of the current session, duration: The duration of heating, temperature: The temperature to heat the vial to, pressure: The pressure to heat the vial at.
+    OUTPUT data: Confirmation that the Initiator+ parameters have been updated.
+
+%labels
+    TAGS Initiator+, Initiator Plus, Microwave Synthesizer, Synthesizer
+    APPS allocate_session, open_lid, load_vial, close_lid, release_session, abort_activity, shutdown_system, get_state, heat_vial, update_heating_parameters
+
+%help
+    Microservice to run microwave accelerate synthesis of chemical compounds

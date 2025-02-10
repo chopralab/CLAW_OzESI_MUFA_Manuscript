@@ -1,0 +1,63 @@
+Bootstrap: docker
+From: ubuntu:18.04
+
+%environment
+    export MASS=10.2
+
+%apprun net_weight
+    exec echo "{'netWeight': 20.2, 'time': '4:20 pm'}"
+
+%apphelp net_weight
+    Gets the current net weight of the scale.
+
+%applabels net_weight
+    INPUT None
+    OUTPUT netWeight: The current net weight of the scale, time: The time the scale net weight was recorded.
+
+%apprun gross_weight
+    echo exec "{'grossWeight': 10.2, 'time': '4:20 pm'}"
+
+%apphelp gross_weight
+    Gets the current gross weight of the scale.
+
+%applabels gross_weight
+    INPUT None
+    OUTPUT stableWeight: The curret gross weight of the scale, time: The time the scale gross weight was recorded.
+
+%apprun zero
+    echo exec "{'status': 'Zero setting successfully performed. Gross, net, and tare = 0', 'time': '4:20 pm'}"
+
+%apphelp zero
+    Sets the gross weight, net weight, and tare weight to 0.
+
+%applabels zero
+    INPUT None
+    OUTPUT status: Confirmation that the zero command was successfully run, time: The time the scale was zeroed.
+
+%apprun tare
+    exec echo "{'status': 'Taring successfully performed', 'time': '4:20 pm'}"
+
+%apphelp tare
+    Sets the tare weight equal to the gross weight. Tares the net weight of the scale to 0.
+
+%applabels tare
+    INPUT None
+    OUTPUT status: Confirmation that the tare command was successfully run, time: The time the scale was tared.
+
+%apprun clear_tare
+    exec echo "{'status': 'Tare value cleared, 0 is in the tare memory', 'time': '4:20 pm'}"
+
+%apphelp clear_tare
+    Sets the tare weight equal to 0.
+
+%applabels clear_tare
+    INPUT None
+    OUTPUT status: Confirmation that the tare was cleared, time: The time the scale tare was cleared.
+
+%labels
+    TAGS scale, weight, mass
+    APPS net_weight, gross_weight, zero, tare, clear_tare
+
+%help
+    Microservice for interacting with a scale used to weigh chemical compounds. This scale retains information 
+    on its gross, net, and tare weight. The net weight of the scale is the tare weight subtracted from the gross weight. 

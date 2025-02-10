@@ -1,0 +1,39 @@
+BootStrap: docker
+From: continuumio/miniconda3:latest
+
+%files
+    kursawe.py /
+
+%post
+    conda create -n torch_env python=3.9
+    conda config --set report_errors false
+    conda install -n torch_env pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvidia
+    echo "export PYTHONPATH=/opt/conda/bin/python" >> $APPTAINER_ENVIRONMENT
+
+%test
+    which python
+    python --version
+    echo $PYTHONPATH
+    which conda
+    conda --version
+    conda list -n torch_env
+    conda env list
+    echo "PWD: $PWD"
+
+%apprun test
+    exec echo "Test Run"
+
+%apprun f1
+    conda run -n torch_env python /kursawe.py --f1 --vector="$VECTOR"
+
+%apprun f2
+    conda run -n torch_env python /kursawe.py --f2 --vector="$VECTOR"
+
+%environment
+    export VECTOR="[0,1,2]"
+
+%runscript
+    conda run -n torch_env python /kursawe.py --f1 --f2 --vector="$VECTOR"
+
+%labels
+    Test of apptainer build with python

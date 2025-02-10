@@ -1,0 +1,53 @@
+Bootstrap: docker
+From: ubuntu:18.04
+
+%environment
+    export BIORAPTR_CONNECT=True
+    export BIORAPTR_INIT=True
+
+%apprun get_protocol_list
+    exec echo "{'response': ['init', 'method1', 'method2', 'method3']}"
+
+%apphelp get_protocol_list
+    Gets a list of all available protocols on the BioRaptr
+
+%applabels get_protocol_list
+    INPUT None
+    OUTPUT response: A list of all of the available protocols on the BioRaptr
+
+%apprun load_protocol
+    exec echo "{'response': 'Successfully loaded protocol'}"
+
+%apphelp load_protocol
+    Loads the provided protocol on the BioRaptr. Must be called prior to starting a protocol. The protocol provided must be valid based on the BioRaptrs protocol list.
+
+%applabels load_protocol
+    INPUT protocol_name: The protocol to load. This protocol name must be valid based on the BioRaptr protocol list.
+    OUTPUT response: Confirmation that the protocol was successfully loaded.
+
+%apprun start_protocol
+    exec echo "{'response': 'Protocol successfully started'}"
+
+%apphelp start_protocol
+    Starts the loaded protocol. A protocol must be successfully loaded prior to running this app.
+
+%applabels start_protocol
+    INPUT None
+    OUTPUT response: Confirmation that the protocol was successfully started.
+
+%apprun stop_protocol
+    exec echo "{'response': 'Protocol successfully stopped'}"
+
+%apphelp stop_protocol
+    Stops the running protocol. Should only be called if explicitly requested by the user.
+
+%applabels stop_protocol
+    INPUT None
+    OUTPUT response: Confirmation that the protocol was successfully stopped.
+
+%labels
+    TAGS BioRaptr, liquid handler
+    APPS get_protocol_list, load_protocol, start_protocol, stop_protocol
+
+%help
+    Microservice to select and run predefined method files on the BioRaptr, a robotic liquid handler
