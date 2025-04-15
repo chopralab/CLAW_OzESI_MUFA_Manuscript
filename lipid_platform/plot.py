@@ -165,8 +165,8 @@ def plot_chromatogram(file_path, plot_path, plot_name, x_range=None):
     # Save the image
     fig.write_image(f"{plot_path}{filename}", scale=2)
 
-    # Show the plot
-    fig.show()
+    # # Show the plot
+    # fig.show()
 
 
 #### Comparison Plot CLAW vs Manual
@@ -210,11 +210,11 @@ def plot_ratio_comparison(df_sample_ratio, plot_title, caitlin_column):
     plt.savefig(f'Projects/canola/plots/{plot_title} n-9 n-7 Ratios.png', dpi=300)
     
     # Show the plot
-    plt.show()
+    # plt.show()
 
 
 ##### barplot paper
-    import pandas as pd
+import pandas as pd
 import plotly.graph_objects as go
 
 def plot_canola_comparison(df_sample1_ratio, df_sample2_ratio, df_sample3_ratio, output_file=None):
@@ -259,10 +259,9 @@ def plot_canola_comparison(df_sample1_ratio, df_sample2_ratio, df_sample3_ratio,
     fig.update_xaxes(tickfont=dict(family="Arial Black", size=20))
 
     # Show the figure or save to a file
-    if output_file:
-        fig.write_image(output_file)
-    else:
-        fig.show()
+ 
+    fig.write_image(output_file)
+
 
 
 
@@ -301,3 +300,63 @@ def process_and_plot(df_sample, sample_name, output_directory):
 
     # Plot the ratios with the plot_ratios function
     plot_ratio(df_plot, color_mapping, output_directory, ratio_threshold=0.5)
+
+
+### 
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import os
+
+def plot_n9_n7_ratios(
+    sample_csv_path, 
+    manual_csv_path, 
+    sample_label='CLAW Area', 
+    manual_label='Manual Area', 
+    save_dir='canola/plots/ratio/',
+    filename_base='n9_n7_ratio_comparison',
+    file_path=None
+):
+    """
+    Create a scatter + line plot comparing n-9/n-7 ratios from CLAW and manual integration,
+    and save it as PNG and PDF at 600 dpi.
+    """
+    df_sample = pd.read_csv(sample_csv_path)
+    df_manual = pd.read_csv(manual_csv_path)
+
+    df_sample['Lipid'] = df_sample['Lipid'].astype(str)
+    df_manual['Lipid'] = df_manual['Lipid'].astype(str)
+
+    df_sample = df_sample.sort_values('Lipid')
+    df_manual = df_manual.sort_values('Lipid')
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.plot(df_sample['Lipid'], df_sample['n-9/n-7_Ratio'], '-o', color='red', label=sample_label, markersize=14)
+    ax.plot(df_manual['Lipid'], df_manual['n-9/n-7_Ratio'], '-o', color='blue', label=manual_label, markersize=14)
+
+    ax.set_xlabel("Lipid", fontsize=20)
+    ax.set_ylabel("n-9 / n-7 Ratio", fontsize=20)
+    ax.tick_params(axis='x', labelsize=16)
+    ax.tick_params(axis='y', labelsize=16)
+
+    ax.legend(fontsize=16)
+    ax.grid(True)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+
+    # Determine file paths
+    if file_path:
+        png_path = f"{file_path}.png"
+        pdf_path = f"{file_path}.pdf"
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    else:
+        os.makedirs(save_dir, exist_ok=True)
+        png_path = os.path.join(save_dir, f"{filename_base}.png")
+        pdf_path = os.path.join(save_dir, f"{filename_base}.pdf")
+
+    # Save and print paths
+    plt.savefig(png_path, dpi=600)
+    plt.savefig(pdf_path, dpi=600)
+    print(f"Saved PNG: {png_path}")
+    print(f"Saved PDF: {pdf_path}")
+    plt.close(fig)
