@@ -32,7 +32,7 @@ conda env create -f requirements/mufaAI.yml
 ## Project Structure - CLAW-OzESI-MRM 
 
 ```
-.
+lipid_platform
 ├── lipid_database
 ├── Projects
 │   └── canola
@@ -47,20 +47,20 @@ conda env create -f requirements/mufaAI.yml
 ```
 
 ## Project Structure - AI Agents
-
 ```
-lipid_platform
-├── lipid_database
-├── Projects
-│   └── canola
-│       ├── mzml
-│       │   ├── OFF
-│       │   └── ON
-│       ├── plots
-│       │   ├── ratio
-│       │   └── stats
-│       └── results
-└── __pycache__
+.
+├── ASPIRE_LINQX/
+│   └── integrations/
+│       └── MUFA/
+│           └── scripts/
+├── lipid_platform/
+│   ├── lipid_database/
+│   └── Projects/
+│       └── canola/
+│           ├── mzml/
+│           ├── plots/
+│           └── results/
+└── requirements/
 ```
 
 ## Contact
