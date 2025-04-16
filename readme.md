@@ -11,7 +11,7 @@ Here we introduce a feature of CLAW for identifying double bond locations in mon
 ## AI Agent Capabilities
 The ASPIRE_LINQX submodule provides three specialized AI agents:
 1. **Data Parser**: Transforms mzml data into organized Pandas DataFrames
-2. **Double-bond Localization**: Automatically predicts possible MRM m/z values for specific double-bond locations and then identifies them in each sample
+2. **Double-bond Localization**: Automatically predicts possible MRM m/z values for user selected double-bond locations and then identifies them in each sample
 3. **Visualization Agent**: Visualization of results
 
 ## Experimental Data
@@ -23,13 +23,30 @@ This repository includes OzESI-MRM data from canola oil analysis at three produc
 ## Installation
 ```bash
 # Clone the repository
-git clone https://github.com/chopralab/CLAW.git
+git clone https://github.com/chopralab/CLAW_OzESI_MUFA_Manuscript.git
 
 # Install dependencies
 conda env create -f requirements/mufaAI.yml
 ```
 
-## Project Structure
+## Project Structure - CLAW-OzESI-MRM 
+
+```
+.
+├── lipid_database
+├── Projects
+│   └── canola
+│       ├── mzml
+│       │   ├── OFF
+│       │   └── ON
+│       ├── plots
+│       │   ├── ratio
+│       │   └── stats
+│       └── results
+└── __pycache__
+```
+
+## Project Structure - AI Agents
 ```
 .
 ├── ASPIRE_LINQX/
