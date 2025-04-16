@@ -176,7 +176,7 @@ import matplotlib.pyplot as plt
 
 # Manual Canola data for comparison
 manual_canola = {
-    'TG': ['TG(52:2)', 'TG(52:3)', 'TG(52:4)', 'TG(54:2)', 'TG(54:3)', 'TG(54:4)', 'TG(54:5)'],
+    'TG': ['TG(52:2)_FA18:1', 'TG(52:3)_FA18:1', 'TG(52:4)_FA18:1', 'TG(54:2)_FA18:1', 'TG(54:3)_FA18:1', 'TG(54:4)_FA18:1', 'TG(54:5)_FA18:1'],
     'Crude': [3.92, 2.2, 2.31, 4.27, 4.88, 3.78, 5.58],
     'Degummed': [3.76, 3.25, 2.25, 3.03, 4.94, 4.06, 5.65],
     'RBD': [4.13, 2.34, 2.18, 4.36, 4.57, 4.04, 4.45]
@@ -185,32 +185,51 @@ manual_canola = {
 # Creating DataFrame for Manual Canola data
 manual_df = pd.DataFrame(manual_canola)
 
-# Function to plot CLAW vs Caitlin data for each sample DataFrame
 def plot_ratio_comparison(df_sample_ratio, plot_title, caitlin_column):
     plt.figure(figsize=(10, 6))
-    
+
+    # Append _FA18:1 to each lipid name
+    df_sample_ratio = df_sample_ratio.copy()
+    df_sample_ratio['Lipid'] = df_sample_ratio['Lipid'].astype(str) + '_FA18:1'
+
     # Plotting sample data (Black line, circle markers)
-    plt.plot(df_sample_ratio['Lipid'], df_sample_ratio['Ratio'], label='CLAW Ratio', color='black', marker='o', markersize=12, linewidth=2)
+    plt.plot(
+        df_sample_ratio['Lipid'], 
+        df_sample_ratio['Ratio'], 
+        label='CLAW Max Intensity', 
+        color='black', 
+        marker='o', 
+        markersize=14, 
+        linewidth=2
+    )
     
     # Plotting Manual data (Blue line, circle markers)
-    plt.plot(manual_df['TG'], manual_df[caitlin_column], label=f"Manual {plot_title}", color='blue', marker='o', markersize=12, linewidth=2)
+    plt.plot(
+        manual_df['TG'], 
+        manual_df[caitlin_column], 
+        label="Manual Area", 
+        color='blue', 
+        marker='o', 
+        markersize=14, 
+        linewidth=2
+    )
     
-    # Adding Title, Labels, and Legend
-    plt.title(f'{plot_title} n-9 n-7 Ratios', fontsize=14)
-    plt.xlabel('Lipid', fontsize=12)
-    plt.ylabel('Ratio', fontsize=12)
-    plt.legend()
+    # Labels and title
+    plt.xlabel('Lipid', fontsize=20)
+    plt.ylabel('n-9 / n-7 Ratio', fontsize=20)
+    plt.legend(fontsize=16, loc='lower right')  # ← bottom right
     
-    # Adding grid, rotating x-axis labels, and showing the plot
+    # Grid, ticks, and layout
     plt.grid(True)
-    plt.xticks(rotation=45)
+    plt.xticks(rotation=45, fontsize=18)
+    plt.yticks(fontsize=18)
     plt.tight_layout()
     
-    # Saving the plot to a file
-    plt.savefig(f'Projects/canola/plots/{plot_title} n-9 n-7 Ratios.png', dpi=300)
-    
-    # Show the plot
-    # plt.show()
+    # Save both PNG and PDF at 600 dpi
+    save_base = f'Projects/canola/plots/{plot_title} n-9 n-7 Ratios'
+    plt.savefig(f'{save_base}.png', dpi=600)
+    plt.savefig(f'{save_base}.pdf', dpi=600)
+    plt.show()
 
 
 ##### barplot paper
@@ -260,7 +279,12 @@ def plot_canola_comparison(df_sample1_ratio, df_sample2_ratio, df_sample3_ratio,
 
     # Show the figure or save to a file
  
-    fig.write_image(output_file)
+        # Show the figure or save to a file
+    if output_file is not None:
+        fig.write_image(output_file)
+    else:
+        fig.show()
+
 
 
 
