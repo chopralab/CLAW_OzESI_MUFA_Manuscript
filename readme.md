@@ -1,7 +1,7 @@
 # CLAW-OzESI-MRM: Agentic OzESI-MRM Processing Pipeline
 
 ## Overview
-Here we introduce a feature of CLAW for identifying double bond locations in monounsaturated fatty acids (MUFAs) using LC-OzESI-MRM (Ozone-induced Electrospray Ionization Multiple Reaction Monitoring). This repository contains both the core OzESI CLAW processing pipeline and its AI agent integration located in the ASPIRE_LINQX submodule.
+Here we introduce a feature of CLAW-OzESI-MRM for identifying double bond locations in monounsaturated fatty acids (MUFAs) using LC-OzESI-MRM (Ozone-induced Electrospray Ionization Multiple Reaction Monitoring). This repository contains both the core OzESI CLAW processing pipeline and its AI agent integration located in the ASPIRE_LINQX submodule.
 
 ## Key Features
 - High-throughput MUFA double bond localization 
