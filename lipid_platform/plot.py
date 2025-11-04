@@ -278,6 +278,8 @@ def plot_canola_comparison(df_sample1_ratio, df_sample2_ratio, df_sample3_ratio,
     fig.update_xaxes(tickfont=dict(family="Arial Black", size=20))
 
     # Show the figure or save to a file
+    #save as pdf
+    fig.write_image("Projects/canola/plots/bar/CLAW_MUFA_Barplot.pdf", scale=2)
  
         # Show the figure or save to a file
     if output_file is not None:
@@ -327,10 +329,10 @@ def process_and_plot(df_sample, sample_name, output_directory):
 
 
 ### 
-
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+from datetime import datetime
 
 def plot_n9_n7_ratios(
     sample_csv_path, 
@@ -343,8 +345,9 @@ def plot_n9_n7_ratios(
 ):
     """
     Create a scatter + line plot comparing n-9/n-7 ratios from CLAW and manual integration,
-    and save it as PNG and PDF at 600 dpi.
+    and save it as PNG, PDF, and CSVs at 600 dpi.
     """
+    # Load data
     df_sample = pd.read_csv(sample_csv_path)
     df_manual = pd.read_csv(manual_csv_path)
 
@@ -354,6 +357,7 @@ def plot_n9_n7_ratios(
     df_sample = df_sample.sort_values('Lipid')
     df_manual = df_manual.sort_values('Lipid')
 
+    # Plotting
     fig, ax = plt.subplots(figsize=(10, 6))
     ax.plot(df_sample['Lipid'], df_sample['n-9/n-7_Ratio'], '-o', color='red', label=sample_label, markersize=14)
     ax.plot(df_manual['Lipid'], df_manual['n-9/n-7_Ratio'], '-o', color='blue', label=manual_label, markersize=14)
@@ -368,19 +372,31 @@ def plot_n9_n7_ratios(
     plt.xticks(rotation=45)
     plt.tight_layout()
 
-    # Determine file paths
+    # Setup file paths
+    today_str = datetime.now().strftime("%Y%m%d")
+
     if file_path:
-        png_path = f"{file_path}.png"
-        pdf_path = f"{file_path}.pdf"
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        base_path = file_path
+        os.makedirs(os.path.dirname(base_path), exist_ok=True)
     else:
         os.makedirs(save_dir, exist_ok=True)
-        png_path = os.path.join(save_dir, f"{filename_base}.png")
-        pdf_path = os.path.join(save_dir, f"{filename_base}.pdf")
+        base_path = os.path.join(save_dir, filename_base)
 
-    # Save and print paths
+    png_path = f"{base_path}.png"
+    pdf_path = f"{base_path}.pdf"
+    sample_csv_out = f"{base_path}_sample_df_{today_str}.csv"
+    manual_csv_out = f"{base_path}_manual_df_{today_str}.csv"
+
+    # Save plots
     plt.savefig(png_path, dpi=600)
     plt.savefig(pdf_path, dpi=600)
     print(f"Saved PNG: {png_path}")
     print(f"Saved PDF: {pdf_path}")
+
+    # Save DataFrames
+    df_sample.to_csv(sample_csv_out, index=False)
+    df_manual.to_csv(manual_csv_out, index=False)
+    print(f"Saved sample CSV: {sample_csv_out}")
+    print(f"Saved manual CSV: {manual_csv_out}")
+
     plt.close(fig)
