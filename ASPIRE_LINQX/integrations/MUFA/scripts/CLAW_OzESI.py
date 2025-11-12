@@ -50,9 +50,11 @@ def create_ion_dict(mrm_database):
     Returns:
         defaultdict: A dictionary with keys as (Parent_Ion, Product_Ion) and values as a list of (Lipid, Class) tuples.
     """
+    print(f"[create_ion_dict] Creating ion dictionary from MRM database with {len(mrm_database)} entries...")
     ion_dict = defaultdict(list)
     for index, row in mrm_database.iterrows():
         ion_dict[(row['Parent_Ion'], row['Product_Ion'])].append((row['Lipid'], row['Class']))
+    print(f"[create_ion_dict] ✓ Created ion dictionary with {len(ion_dict)} unique ion transitions")
     return ion_dict
 
 def within_tolerance(a, b, tolerance=0.3):
@@ -109,14 +111,18 @@ def mzml_parser(file_path, plot_chromatogram=False):
         Updates the global DataFrames master_df and OzESI_time_df with parsed data.
     """
     global master_df, OzESI_time_df
+    print(f"\n[mzml_parser] Starting to parse: {os.path.basename(file_path)}")
     rows = []
     ozesi_rows = []
     
+    print(f"[mzml_parser] Opening mzML file...")
     run = pymzml.run.Reader(file_path, skip_chromatogram=False)
     q1_mz = 0
     q3_mz = 0
 
+    spectrum_count = 0
     for spectrum in run:
+        spectrum_count += 1
         for element in spectrum.ID.split(' '):
             if 'Q1' in element:
                 q1 = element.split('=')
@@ -144,10 +150,15 @@ def mzml_parser(file_path, plot_chromatogram=False):
                         'Sample_ID': sample_id,
                         'Transition': transition
                     })
+    
+    print(f"[mzml_parser] Processed {spectrum_count} spectra")
+    print(f"[mzml_parser] Extracted {len(rows)} transitions and {len(ozesi_rows)} OzESI data points")
+    
     df = pd.DataFrame(rows)
     OzESI_time_df = pd.concat([OzESI_time_df, pd.DataFrame(ozesi_rows)], ignore_index=True)
     master_df = pd.concat([master_df, df], ignore_index=True)
-    print(f'Finished parsing mzML file: {file_path}\n')
+    print(f'[mzml_parser] ✓ Finished parsing: {os.path.basename(file_path)}')
+    print(f'[mzml_parser] Total master_df rows: {len(master_df)}, Total OzESI_time_df rows: {len(OzESI_time_df)}\n')
 
 def mzml_parser_batch(folder_name, plot_chromatogram=False):
     """
@@ -161,13 +172,24 @@ def mzml_parser_batch(folder_name, plot_chromatogram=False):
                                             Defaults to False.
     """
     global master_df
+    print(f"\n{'='*70}")
+    print(f"[mzml_parser_batch] Starting batch processing of folder: {folder_name}")
+    print(f"{'='*70}")
+    
     data_folder = os.listdir(folder_name)
     data_folder.sort()
-    for file in data_folder:
-        if file.endswith('.mzML'):
-            file_path = os.path.join(folder_name, file)
-            mzml_parser(file_path, plot_chromatogram=plot_chromatogram)
-    print('Finished parsing all mzML files\n')
+    mzml_files = [f for f in data_folder if f.endswith('.mzML')]
+    
+    print(f"[mzml_parser_batch] Found {len(mzml_files)} mzML files to process")
+    
+    for idx, file in enumerate(mzml_files, 1):
+        print(f"\n[mzml_parser_batch] Processing file {idx}/{len(mzml_files)}")
+        file_path = os.path.join(folder_name, file)
+        mzml_parser(file_path, plot_chromatogram=plot_chromatogram)
+    
+    print(f"\n{'='*70}")
+    print(f'[mzml_parser_batch] ✓ Finished parsing all {len(mzml_files)} mzML files')
+    print(f"{'='*70}\n")
 
 def save_dataframe(df, Project_results, file_name_to_save, max_attempts=5):
     """
@@ -175,21 +197,30 @@ def save_dataframe(df, Project_results, file_name_to_save, max_attempts=5):
 
     Args:
         df (pd.DataFrame): The DataFrame to be saved.
-        Project_results (str): The subfolder name under data_results.
+        Project_results (str): The results directory path (absolute or relative).
         file_name_to_save (str): The base file name for the CSV.
         max_attempts (int, optional): Maximum number of attempts to save the file if a file with the same name exists.
                                       Defaults to 5.
     """
-    folder_path = f'data_results/data/data_matching/{Project_results}'
+    # Check if Project_results is an absolute path
+    if os.path.isabs(Project_results):
+        folder_path = Project_results
+    else:
+        # If relative, use the old behavior
+        folder_path = f'data_results/data/data_matching/{Project_results}'
+    
+    print(f"[save_dataframe] Creating directory: {folder_path}")
     os.makedirs(folder_path, exist_ok=True)
+    
     for i in range(max_attempts):
-        file_path = f'{folder_path}/{file_name_to_save}.csv'
+        file_path = os.path.join(folder_path, f'{file_name_to_save}.csv')
         if not os.path.isfile(file_path):
             df.to_csv(file_path, index=False)
-            print(f"Saved DataFrame to {file_path}")
+            print(f"[save_dataframe] ✓ Saved DataFrame to: {file_path}")
+            print(f"[save_dataframe] DataFrame contains {len(df)} rows and {len(df.columns)} columns")
             break
     else:
-        print(f"Failed to save DataFrame after {max_attempts} attempts.")
+        print(f"[save_dataframe] ✗ Failed to save DataFrame after {max_attempts} attempts.")
 
 def read_mrm_list(filename, remove_std=True, deuterated=False):
     """
@@ -206,6 +237,7 @@ def read_mrm_list(filename, remove_std=True, deuterated=False):
     Returns:
         pd.DataFrame: Processed MRM database with columns ['Lipid', 'Parent_Ion', 'Product_Ion', 'Class', 'Transition'].
     """
+    print(f"\n[read_mrm_list] Reading MRM database from: {os.path.basename(filename)}")
     raw_mrm_data = pd.read_excel(filename, sheet_name=None)
     concatenated_mrm_data = pd.concat(raw_mrm_data, ignore_index=True)
     lipid_MRM_data = concatenated_mrm_data[['Compound Name', 'Parent Ion', 'Product Ion', 'Class']]
@@ -215,12 +247,18 @@ def read_mrm_list(filename, remove_std=True, deuterated=False):
     lipid_MRM_data['Transition'] = lipid_MRM_data['Parent_Ion'].astype(str) + ' -> ' + lipid_MRM_data['Product_Ion'].astype(str)
     lipid_MRM_data = lipid_MRM_data.rename(columns={'Compound_Name': 'Lipid'})
     if remove_std:
-        lipid_classes_to_keep = ['PS', 'PG', 'CE', 'PC', 'DAG', 'PE', 'TAG', 'FA', 'Cer', 'CAR', 'PI', 'SM']
-        lipid_MRM_data = lipid_MRM_data[lipid_MRM_data['Class'].isin(lipid_classes_to_keep)]
+        before_count = len(lipid_MRM_data)
+        lipid_MRM_data = lipid_MRM_data[~lipid_MRM_data['Lipid'].str.contains('std', case=False, na=False)]
+        removed_count = before_count - len(lipid_MRM_data)
+        print(f"[read_mrm_list] Removed {removed_count} standard compounds")
+    
     if deuterated:
-        lipid_MRM_data['Parent_Ion'] += 1
-        lipid_MRM_data['Product_Ion'] += 1
+        print(f"[read_mrm_list] Adjusting for deuterated compounds (+3 to Parent and Product ions)")
+        lipid_MRM_data['Parent_Ion'] = lipid_MRM_data['Parent_Ion'] + 3
+        lipid_MRM_data['Product_Ion'] = lipid_MRM_data['Product_Ion'] + 3
         lipid_MRM_data['Transition'] = lipid_MRM_data['Parent_Ion'].astype(str) + ' -> ' + lipid_MRM_data['Product_Ion'].astype(str)
+    
+    print(f"[read_mrm_list] ✓ Final MRM database contains {len(lipid_MRM_data)} entries\n")
     return lipid_MRM_data
 
 def match_lipids_parser(mrm_database, df, tolerance=0.3):
@@ -237,8 +275,18 @@ def match_lipids_parser(mrm_database, df, tolerance=0.3):
     Returns:
         pd.DataFrame: DataFrame with updated 'Lipid' and 'Class' columns based on matches.
     """
+    print(f"\n[match_lipids_parser] Starting lipid matching with tolerance={tolerance}")
+    print(f"[match_lipids_parser] Input DataFrame has {len(df)} rows")
+    
     ion_dict = create_ion_dict(mrm_database)
-    df_matched = df.apply(lambda row: match_ions(row, ion_dict=ion_dict, tolerance=tolerance), axis=1)
+    
+    print(f"[match_lipids_parser] Matching ions against MRM database...")
+    df_matched = df.apply(lambda row: match_ions(row, ion_dict, tolerance), axis=1)
+    
+    # Count matches
+    matched_count = df_matched['Lipid'].notna().sum() if 'Lipid' in df_matched.columns else 0
+    print(f"[match_lipids_parser] ✓ Matched {matched_count}/{len(df)} rows to lipids\n")
+    
     return df_matched
 
 # ========= Global DataFrame Initialization =========
@@ -282,6 +330,19 @@ class Parse:
             batch_processing (bool, optional): Whether to process a folder of mzML files. Defaults to True.
             plot_chromatogram (bool, optional): Whether to plot chromatograms. Defaults to False.
         """
+        print(f"\n{'='*70}")
+        print(f"[Parse.__init__] Initializing Parse object")
+        print(f"{'='*70}")
+        print(f"  MRM Database: {os.path.basename(data_base_name_location)}")
+        print(f"  Data Location: {Project_Folder_data}")
+        print(f"  Results Folder: {Project_results}")
+        print(f"  Output File: {file_name_to_save}")
+        print(f"  Tolerance: {tolerance}")
+        print(f"  Remove Standards: {remove_std}")
+        print(f"  Save Data: {save_data}")
+        print(f"  Batch Processing: {batch_processing}")
+        print(f"{'='*70}\n")
+        
         self.data_base_name_location = data_base_name_location
         self.Project_Folder_data = Project_Folder_data
         self.Project_results = Project_results
@@ -333,26 +394,42 @@ class Parse:
                 - OzESI_time_df: DataFrame containing OzESI chromatogram data.
         """
         global master_df, OzESI_time_df
+        
+        print(f"\n{'#'*70}")
+        print(f"# STARTING FULL_PARSE WORKFLOW")
+        print(f"{'#'*70}\n")
+        
         # (Optional) Reset the global DataFrames before processing
+        print(f"[full_parse] Step 1: Resetting global DataFrames...")
         master_df = pd.DataFrame(columns=['Parent_Ion', 'Product_Ion', 'Intensity', 'Transition', 'Sample_ID'])
         OzESI_time_df = pd.DataFrame(columns=['Lipid', 'Parent_Ion', 'Product_Ion', 'Retention_Time', 
                                                'OzESI_Intensity', 'Sample_ID', 'Transition'])
+        print(f"[full_parse] ✓ DataFrames reset\n")
         
         # Step 1: Read the MRM database.
+        print(f"[full_parse] Step 2: Reading MRM database...")
         mrm_database = self.read_mrm_list()
         
         # Step 2: Parse mzML files.
+        print(f"[full_parse] Step 3: Parsing mzML files...")
         if self.batch_processing:
             mzml_parser_batch(self.Project_Folder_data, plot_chromatogram=self.plot_chromatogram)
         else:
             mzml_parser(self.Project_Folder_data, plot_chromatogram=self.plot_chromatogram)
         
         # Step 3: Match lipids using the parsed master_df.
+        print(f"[full_parse] Step 4: Matching lipids from parsed data...")
         df_matched = self.match_lipids_parser(mrm_database, master_df)
         
         # Step 4: Optionally save the matched DataFrame.
         if self.save_data:
+            print(f"[full_parse] Step 5: Saving matched DataFrame...")
             save_dataframe(df_matched, self.Project_results, self.file_name_to_save)
+        else:
+            print(f"[full_parse] Step 5: Skipping save (save_data=False)")
+        
+        print(f"\n[full_parse] ✓ Full parse workflow complete!")
+        print(f"[full_parse] Returning {len(df_matched)} matched rows and {len(OzESI_time_df)} OzESI rows\n")
         
         return df_matched, OzESI_time_df
 
@@ -373,17 +450,38 @@ class Parse:
                 - OzESI_time_df: DataFrame containing OzESI chromatogram data.
                 - df_OzESI_matched: OzESI DataFrame with updated matched lipid information.
         """
+        print(f"\n{'#'*70}")
+        print(f"# STARTING MRM_RUN_ALL WORKFLOW")
+        print(f"{'#'*70}\n")
+        
         # Step 1: Run the full parse workflow.
+        print(f"[mrm_run_all] Step 1: Running full_parse workflow...\n")
         df_full_matched, ozesi_time_df = self.full_parse()
         
         # Step 2: Re-read the MRM database (with the provided deuterated flag).
+        print(f"\n[mrm_run_all] Step 2: Re-reading MRM database for OzESI matching (deuterated={deuterated})...")
         mrm_database = self.read_mrm_list(deuterated=deuterated)
         
         # Step 3: Match the OzESI chromatogram data using the re-read MRM database.
+        print(f"[mrm_run_all] Step 3: Matching OzESI chromatogram data...")
         df_OzESI_matched = self.match_lipids_parser(mrm_database, ozesi_time_df)
-        # print and save each df to csv file before returning
-        print('df_full_match saved to csv',df_full_matched.to_csv('df_full_matched.csv'))
-        print('ozesi_time_df saved to csv',ozesi_time_df.to_csv('ozesi_time_df.csv'))
-        print('df_OzESI_matched saved to csv',df_OzESI_matched.to_csv('df_OzESI_matched.csv'))
+        
+        # Save each df to csv file before returning
+        print(f"\n[mrm_run_all] Step 4: Saving all DataFrames to CSV...")
+        print(f"[mrm_run_all] Saving df_full_matched.csv...")
+        df_full_matched.to_csv('df_full_matched.csv', index=False)
+        print(f"[mrm_run_all] ✓ Saved df_full_matched.csv ({len(df_full_matched)} rows)")
+        
+        print(f"[mrm_run_all] Saving ozesi_time_df.csv...")
+        ozesi_time_df.to_csv('ozesi_time_df.csv', index=False)
+        print(f"[mrm_run_all] ✓ Saved ozesi_time_df.csv ({len(ozesi_time_df)} rows)")
+        
+        print(f"[mrm_run_all] Saving df_OzESI_matched.csv...")
+        df_OzESI_matched.to_csv('df_OzESI_matched.csv', index=False)
+        print(f"[mrm_run_all] ✓ Saved df_OzESI_matched.csv ({len(df_OzESI_matched)} rows)")
+        
+        print(f"\n{'#'*70}")
+        print(f"# MRM_RUN_ALL WORKFLOW COMPLETE!")
+        print(f"{'#'*70}\n")
         
         return df_full_matched, ozesi_time_df, df_OzESI_matched
