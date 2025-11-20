@@ -41,14 +41,14 @@ The main end‑to‑end example for the CLAW OzESI pipeline is provided in the n
 
 `lipid_platform/CLAW_OzESI_Tutorial.ipynb`
 
-This tutorial walks through processing canola oil LC‑OzESI‑MRM data from the `Projects/canola` folder.
+This tutorial walks through processing canola oil LC‑OzESI‑MRM data from the `Projects/canola_tutorial` folder.
 
 1. Open `lipid_platform/CLAW_OzESI_Tutorial.ipynb`.
 2. Ensure the kernel is set to the `mufaAI` conda environment.
 3. Run the cells from top to bottom to:
-   - Load the canola OzESI‑MRM data from `lipid_platform/Projects/canola/mzml/`.
+   - Load the canola OzESI‑MRM data from `lipid_platform/Projects/canola_tutorial/mzml/`.
    - Process and analyze MUFA double‑bond localization.
-   - Generate plots and results under `lipid_platform/Projects/canola/plots/` and `results/`.
+   - Generate plots and results under `lipid_platform/Projects/canola_tutorial/plots/` and `results/`.
 
 ## Using MUFA AI Agents (Jupyter Notebooks)
 
@@ -82,7 +82,7 @@ The first three notebooks demonstrate how to parse OzESI‑MRM data, apply the O
 lipid_platform
 ├── lipid_database
 ├── Projects
-│   └── canola
+│   └── canola_tutorial
 │       ├── mzml
 │       │   ├── OFF
 │       │   └── ON
@@ -102,7 +102,7 @@ lipid_platform
 ├── lipid_platform/
 │   ├── lipid_database/
 │   └── Projects/
-│       └── canola/
+│       └── canola_tutorial/
 │           ├── mzml/
 │           ├── plots/
 │           └── results/
