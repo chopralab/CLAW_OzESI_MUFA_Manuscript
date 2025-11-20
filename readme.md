@@ -68,14 +68,6 @@ Error‑handling / debugging examples:
 - `MUFA_AI_Agent_Error_Example_2.ipynb`
 - `MUFA_AI_Agent_Error_Example_3.ipynb`
 
-To run any of these notebooks:
-
-```bash
-conda activate mufaAI
-jupyter lab
-```
-
-In Jupyter Lab:
 
 1. Navigate to `ASPIRE_LINQX/integrations/MUFA`.
 2. Open one of the MUFA AI Agent notebooks listed above.
