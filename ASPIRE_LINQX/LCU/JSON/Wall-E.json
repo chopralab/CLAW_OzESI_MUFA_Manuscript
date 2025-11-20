@@ -1,0 +1,120 @@
+{
+    "system_type": "auto-pipetter",
+    "system_name": "WALL-E",
+    "components": {
+        "component_list": ["liquid_handeler","plate_holder"],
+        "liquid_handeler": {
+            "component_list": ["pipette"],
+            "pipette": {
+                "component_list": ["size","head"],
+                "size": [20,200,1000],
+                "head": [1,5]
+            }
+        },
+        "plate_holder": {
+            "component_list": ["microplate","size"],
+            "microplate": {
+                "component_list": ["wells","total_volume","working_volume","material"],
+                "wells": [96],
+                "total_volume": [0.2,2],
+                "working_volume": [0.1,1.5],
+                "material": ["polypropylene","polystyrene"]
+            },
+            "size": [8]
+        }
+    },
+    "structure": {
+        "component/1": {
+            "type": "liquid_handeler",
+            "component/1/1": {
+                "type": "pipette",
+                "size": 200,
+                "head": 1
+            },
+            "component/1/2": {
+                "type": "pipette",
+                "size": 200,
+                "head": 5
+            }
+        },
+        "component/2": {
+            "type": "microplate_holder",
+            "size": 8,
+            "component/2/1":{
+                "type": "microplate",
+                "wells": 96,
+                "total_volume": 0.2,
+                "working_volume": 0.1,
+                "material": "polypropylene"
+            },
+            "component/2/2":{
+                "type": "microplate",
+                "wells": 96,
+                "total_volume": 0.2,
+                "working_volume": 0.1,
+                "material": "polypropylene"
+            },
+            "component/2/3":{
+                "type": "microplate",
+                "wells": 96,
+                "total_volume": 0.2,
+                "working_volume": 0.1,
+                "material": "polypropylene"
+            },
+            "component/2/4":{
+                "type": "microplate",
+                "wells": 96,
+                "total_volume": 0.2,
+                "working_volume": 0.1,
+                "material": "polypropylene"
+            },
+            "component/2/5":{
+                "type": "microplate",
+                "wells": 96,
+                "total_volume": 0.2,
+                "working_volume": 0.1,
+                "material": "polypropylene"
+            },
+            "component/2/6":{
+                "type": "microplate",
+                "wells": 96,
+                "total_volume": 0.2,
+                "working_volume": 0.1,
+                "material": "polypropylene"
+            },
+            "component/2/7":{
+                "type": "microplate",
+                "wells": 96,
+                "total_volume": 0.2,
+                "working_volume": 0.1,
+                "material": "polypropylene"
+            },
+            "component/2/8":{
+                "type": "microplate",
+                "wells": 96,
+                "total_volume": 0.2,
+                "working_volume": 0.1,
+                "material": "polypropylene"
+            }
+        }
+    },
+    "logistics": {
+        "location": "Purdue",
+        "wait_time": 0
+    },
+    "commands": {
+        "command_list": ["transfer"],
+        "transfer": {
+            "command_list": ["from_vessel","to_vessel","volume"],
+            "from_vessel": {
+                "command_list": ["language"]
+            },
+            "to_vessel": {
+                "command_list": [""]
+            },
+            "volume": {
+                "command_list": [""]
+            }
+        }
+    }
+}

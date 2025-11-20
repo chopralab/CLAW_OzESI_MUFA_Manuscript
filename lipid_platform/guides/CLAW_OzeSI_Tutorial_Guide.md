@@ -18,7 +18,7 @@ It integrates:
 
 ---
 
-### ⚙️ 1. Setup
+### ⚙️ Setup
 
 ```python
 # Import libraries
@@ -35,10 +35,11 @@ importlib.reload(plot_TG)
 
 ---
 
-### 📁 2. Define Data Paths
+### 📁 Define Data Paths
 
 ```python
 # Define your project directories
+# Examples paths
 data_base_name_location = "/scratch/negishi/iyer95/iyer95/CLAW_OzESI_Paper/CLAW/lipid_platform/lipid_database"
 analysis_dir = "/scratch/negishi/iyer95/iyer95/CLAW_OzESI_Paper/CLAW/analysis"
 Project_results = f"{analysis_dir}/results"
@@ -53,131 +54,77 @@ os.makedirs(f"{Project_results}/ratio_intensity", exist_ok=True)
 ```
 
 ---
+ories
+(Project_results / "ratio_area").mkdir(parents=True, exist_ok=True)
+(Project_results / "ratio_intensity").mkdir(parents=True, exist_ok=True)
+```
 
-### 🧬 3. Load Lipid Data
-
+## Run MRM Parser
 ```python
-# Load lipid dataframe
-df_canola_lipids = pd.read_csv("df_Canola_Lipids.csv")
-
-# Inspect columns
-df_canola_lipids.head()
+parser = Parse(
+    data_base_name_location=data_base_name_location,
+    Project_Folder_data=Project_Folder_data,
+    Project_results=Project_results,
+    file_name_to_save=file_name_to_save,
+    tolerance=tolerance,
+    remove_std=True,
+    save_data=False,
+    batch_processing=True,
+    plot_chromatogram=True
+)
 ```
 
-Expected columns:
-
+## Match Ion Labels
+```python
+lipid_mrm = pd.read_csv("Projects/canola_tutorial/results/lipid_mrm.csv")
+df_canola_lipids = ion_label_parser(
+    lipid_mrm=lipid_mrm,
+    df_OzESI_matched=df_OzESI_matched,
+    ion_tolerance=0.3,
+    rt_tolerance=1.0,
+    ion_labels=['n-7', 'n-9']
+)
 ```
-Sample_ID | Lipid | Peak_Area | RT | Class | Intensity | ...
-```
 
----
-
-### 🧩 4. Configure Sample Groups
-
+## Generate Ratio Plots
 ```python
 SAMPLES = [
-    {"name": "Crude", "sample_file": "df_CrudeCanola_O3on_150gN3_02082023_summary.csv", "manual_file": "df_manual_crude.csv"},
-    {"name": "Degummed", "sample_file": "df_DegummedCanola_O3on_150gN3_02082023_summary.csv", "manual_file": "df_manual_degummed.csv"},
-    {"name": "RBD", "sample_file": "df_RBDCanola_O3on_150gN3_02082023_summary.csv", "manual_file": "df_manual_RBD.csv"}
+    {'name': 'Crude', 'sample_file': 'df_CrudeCanola_O3on_150gN3_02082023_summary.csv', 
+     'manual_file': 'df_manual_crude.csv'},
+    {'name': 'Degummed', 'sample_file': 'df_DegummedCanola_O3on_150gN3_02082023_summary.csv', 
+     'manual_file': 'df_manual_degummed.csv'},
+    {'name': 'RBD', 'sample_file': 'df_RBDCanola_O3on_150gN3_02082023_summary.csv', 
+     'manual_file': 'df_manual_RBD.csv'}
 ]
+
+for sample in SAMPLES:
+    sample_csv = Project_results / sample['sample_file']
+    manual_csv = Project_results / sample['manual_file']
+    
+    if sample_csv.exists() and manual_csv.exists():
+        # Area ratios
+        plot_n9_n7_ratios(
+            sample_csv_path=str(sample_csv),
+            manual_csv_path=str(manual_csv),
+            sample_label=f'{sample["name"]} CLAW Area',
+            manual_label=f'{sample["name"]} Manual Area',
+            file_path=str(Project_results / "ratio_area" / f"{sample['name']}_area_ratios")
+        )
+        
+        # Intensity ratios
+        plot_n9_n7_ratios_intensity(
+            sample_csv_path=str(sample_csv),
+            manual_csv_path=str(manual_csv),
+            sample_label=f'{sample["name"]} CLAW Intensity',
+            manual_label=f'{sample["name"]} Manual Area',
+            file_path=str(Project_results / "ratio_intensity" / f"{sample['name']}_intensity_ratios")
+        )
+
+print(f"✓ Area plots: {Project_results / 'ratio_area'}")
+print(f"✓ Intensity plots: {Project_results / 'ratio_intensity'}")
 ```
 
----
+## Output
 
-### 🎛️ 5. Run Peak Analysis
-
-```python
-SHOW_PLOTS = False  # set True to show interactive figures
-
-summary_df = CLAW_OzESI.peak_analysis(
-    df_canola_lipids,
-    output_dir=str(analysis_dir),
-    show_plots=SHOW_PLOTS,
-    plot_TG_module=plot_TG
-)
-summary_df.head()
-```
-
-If you see:
-
-```
-ℹ️ No summaries were generated (no patterns found for any samples)
-```
-
-Check that:
-
-* `Sample_ID` values match your configuration.
-* `Lipid` labels include `n-7` / `n-9` (not `n7` / `n9`).
-* The DataFrame has valid numeric intensities.
-
----
-
-### 🧹 6. Troubleshooting
-
-**Fix naming and whitespace**
-
-```python
-df_canola_lipids['Sample_ID'] = df_canola_lipids['Sample_ID'].astype(str).str.strip()
-df_canola_lipids['Lipid'] = (
-    df_canola_lipids['Lipid'].astype(str)
-    .str.strip()
-    .str.replace('_', ' ')
-    .str.replace('n7', 'n-7')
-    .str.replace('n9', 'n-9')
-)
-```
-
-**Verify sample coverage**
-
-```python
-df_canola_lipids['Sample_ID'].unique()
-df_canola_lipids['Lipid'].unique()[:10]
-```
-
----
-
-### 📊 7. Generate Ratio Plots
-
-```python
-# Example: n-9 vs n-7 comparison
-plot_TG.plot_n9_n7_ratios(summary_df, output_dir=Project_results)
-```
-
----
-
-### 📈 8. Save Results
-
-```python
-summary_df.to_csv(f"{Project_results}/summary_results.csv", index=False)
-```
-
----
-
-### 🧠 9. Notes
-
-* This workflow is modular: you can reuse the `CLAW_OzESI.peak_analysis()` function for other lipid classes by adjusting lipid naming patterns.
-* If you have a custom configuration, generate it via:
-
-  ```python
-  config = plot_TG.create_custom_config()
-  CLAW_OzESI.peak_analysis(df_canola_lipids, config=config)
-  ```
-
----
-
-### 🗂️ Output Files
-
-| Folder                | Description                  |
-| --------------------- | ---------------------------- |
-| `ratio_area/`         | Area-based lipid ratios      |
-| `ratio_intensity/`    | Intensity-based lipid ratios |
-| `summary_results.csv` | Combined output summary      |
-
----
-
-### ✅ End of Tutorial
-
-This completes the CLAW_OzESI lipid peak analysis pipeline setup and execution.
-
----
-
+- **Area-based ratios**: `results/ratio_area/`
+- **Intensity-based ratios**: `results/ratio_intensity/`

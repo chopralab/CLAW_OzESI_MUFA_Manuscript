@@ -1,0 +1,17 @@
+{
+    "statement/1": {
+        "system_key": "deck/num_plates",
+        "request_key": "deck/num_plates",
+        "operator": ">="
+    },
+    "statement/2": {
+        "system_key": "tip_holder/num_tips",
+        "request_key": "tip_holder/num_tips",
+        "operator": ">="
+    },
+    "statement/3" {
+        "system_key": "pipette/size",
+        "request_key": "pipette/size",
+        "operator": "="
+    }
+}

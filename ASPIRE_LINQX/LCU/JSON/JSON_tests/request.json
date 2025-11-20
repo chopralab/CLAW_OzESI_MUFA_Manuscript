@@ -1,0 +1,25 @@
+{
+    "scheduler":
+    {
+        "deck": {
+            "num_plates": 2
+        },
+        "tip_holder": {
+            "num_tips": 30
+        },
+        "pipette": {
+            "size":200,
+            "channel": 5
+        },
+        "microplate":{
+            "num_wells": 96,
+            "material": ["polystyrene","polypropylene"],
+            "volume": 0.2
+        },
+        "tips": {
+            "size": 200,
+            "types": "non-sterile",
+            "material": "polypropylene"
+        }
+        }
+}

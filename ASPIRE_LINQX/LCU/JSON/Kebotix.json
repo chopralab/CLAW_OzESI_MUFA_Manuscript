@@ -1,0 +1,41 @@
+{
+    "assay-instruments": 
+        ["Wako-dispenser",
+        "Kalypsys-dispenser"], 
+    "microplates": [
+        "Medium-binding black solid-bottom Greiner 789176-F"
+    ],
+    
+    "microplate-readers": [
+        "PHERAstar FSX microplate reader",
+        "ViewLux microplate reader"
+    ],
+    
+    "microplate-reader/1/type": "PHERAstar FSX microplate reader",
+    "microplate-reader/1/excitation-filter": "340 nm",
+    "microplate-reader/1/emission-filter": "450 nm",
+    "microplate-reader/1/number-of-flashes": "10",
+    
+    "microplate-reader/2/type": "ViewLux microplate reader",
+    "microplate-reader/2/excitation-filter": "340 nm",
+    "microplate-reader/2/emission-filter": "450 nm",
+    "microplate-reader/2/energy": "2000 J",
+    "microplate-reader/2/exposure-time": "2 s",
+    
+    "centrifuge/rpm-max": "10000 rpm",
+    "centrifuge/runtime-max": "12 hours",
+    
+    "chemicals": [
+        "sodium acetate",
+        "water",
+        "DMSO", 
+        "glycerol",
+        "buffer"
+    ],
+    
+    "proteins": [
+        "Papain",
+        "Cysteine"
+    ]
+    }
+    

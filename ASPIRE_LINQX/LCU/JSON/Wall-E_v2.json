@@ -1,0 +1,50 @@
+{
+    "system_type": "auto-pipetter",
+    "system_name": "WALL-E",
+    "components": {
+        "component_list": ["liquid_handeler","plate_holder"],
+        "liquid_handeler": {
+            "component_list": ["pipette"],
+            "pipette": {
+                "component_list": ["size"],
+                "size": 200
+            },
+            "dimensionality": [2]
+        },
+        "plate_holder": {
+            "component_list": ["microplate"],
+            "microplate": {
+                "component_list": ["wells", "material"],
+                "material": ["polypropylene","polystyrene"],
+                "wells": {
+                    "total_volume": 0.2,
+                    "working_volume": 0.1
+                },
+                "dimensionality": [8,12] 
+            },
+            "dimensionality": [3,5]
+        },
+        "dimensionality": [2],
+        "layout": ["liquid_handeler","plate_holder"]
+
+    },
+    "logistics": {
+        "location": "Purdue",
+        "wait_time": 0
+    },
+    "commands": {
+        "command_list": ["transfer"],
+        "transfer": {
+            "command_list": ["from_vessel","to_vessel","volume"],
+            "from_vessel": {
+                "command_list": ["language"]
+            },
+            "to_vessel": {
+                "command_list": [""]
+            },
+            "volume": {
+                "command_list": [""]
+            }
+        }
+    }
+}
